@@ -15,8 +15,8 @@ Este projeto é um sistema de backend para controle de check-in e check-out de c
 Primeiro, crie um fork do repositório e, após isso, clone seu fork para sua máquina local:
 
 ```bash
-git clone https://github.com/SeuUsuario/controle-de-criancas-backend.git
-cd controle-de-criancas-backend
+git clone https://github.com/SeuUsuario/controle-criancas-backend.git
+cd controle-criancas-backend
 ```
 ### 2. Criar e Ativar o Ambiente Virtual
 É recomendado criar um ambiente virtual para isolar as dependências do projeto. Para criar e ativar o ambiente virtual, execute:
