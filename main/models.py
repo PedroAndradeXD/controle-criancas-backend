@@ -1,6 +1,7 @@
 from django.db import models
 from uuid import uuid4
 from datetime import date
+from .validators import NomeValidator, TelefoneValidator, DataNascimentoValidator, StatusValidator, SalaValidator, ClassificacaoValidator
 
 
 class Usuario(models.Model):
@@ -22,7 +23,7 @@ class Controle(models.Model):
     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     data_horario_checkin = models.DateTimeField(auto_now_add=True)
     data_horario_checkout = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=10, choices=ESCOLHA_STATUS, default='checkin')
+    status = models.CharField(max_length=10, choices=ESCOLHA_STATUS, default='checkin', validators=[StatusValidator])
 
     def __str__(self):
         return self.status
@@ -30,9 +31,9 @@ class Controle(models.Model):
 
 class Responsavel(models.Model):
     id_responsavel = models.UUIDField(primary_key=True, default=uuid4)
-    nome = models.CharField(max_length=255)
+    nome = models.CharField(max_length=255, validators=[NomeValidator()])
     relacionamento_crianca = models.CharField(max_length=255)
-    telefone_responsavel = models.CharField(max_length=11)
+    telefone_responsavel = models.CharField(max_length=11, validators=[TelefoneValidator])
 
     def __str__(self):
         return self.nome
@@ -55,10 +56,10 @@ class Crianca(models.Model):
 
     id_crianca = models.UUIDField(primary_key=True, default=uuid4)
     id_checkin = models.ForeignKey(Controle, on_delete=models.CASCADE)
-    nome = models.CharField(max_length=255)
-    data_nascimento = models.DateField(default=date(2000, 1, 1))
-    classificacao = models.CharField(max_length=10, choices=ESCOLHA_CLASSIFICACAO)
-    sala = models.CharField(max_length=12, choices=ESCOLHA_SALA)
+    nome = models.CharField(max_length=255, validators=[NomeValidator])
+    data_nascimento = models.DateField(default=date(2000, 1, 1), validators=[DataNascimentoValidator])
+    classificacao = models.CharField(max_length=10, choices=ESCOLHA_CLASSIFICACAO, validators=[ClassificacaoValidator])
+    sala = models.CharField(max_length=12, choices=ESCOLHA_SALA, validators=[SalaValidator])
 
     def __str__(self):
         return self.nome
