@@ -6,11 +6,11 @@ from .validators import NomeValidator, TelefoneValidator, DataNascimentoValidato
 
 class Usuario(models.Model):
     id_usuario = models.UUIDField(primary_key=True, default=uuid4)
-    username_usuario = models.CharField(max_length=255)
-    senha_usuario = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
+    senha = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.username_usuario
+        return self.username
 
 
 class Controle(models.Model):
