@@ -37,3 +37,8 @@ class ClassificacaoValidator:
     def __call__(self, value):
         if value not in ['membro', 'visitante', 'congregado']:
             raise serializers.ValidationError("Classificação inválida! Escolha entre 'membro', 'visitante' e 'congregado'.")
+        
+class UsernameValidator:
+    def __call__(self, value):
+        if len(value) < 3:
+            raise serializers.ValidatorError("Username deve ter ao menos 3 caracteres.")

@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Crianca, Responsavel, Controle
+from .models import Crianca, Responsavel, Controle, Usuario
+from .validators import UsernameValidator
 
 class CriancaSerializer(serializers.ModelSerializer):
     idade = serializers.ReadOnlyField()
@@ -24,3 +25,27 @@ class ControleSerializer(serializers.ModelSerializer):
         model = Controle
         fields = ['id_checkin', 'status', 'data_horario_checkin', 'data_horario_checkout']
         read_only_fields = ['id_checkin', 'status', 'data_horario_checkin', 'data_horario_checkout']
+
+class LoginUsuarioSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(validators=[UsernameValidator()])
+    senha = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Usuario
+        fields = ['username', 'senha']
+
+    def validate(self, data):
+        username = data['username']
+        senha = data['senha']
+
+        try:
+            usuario = Usuario.objects.get(username__iexact=username)
+        except Usuario.DoesNotExist:
+            raise serializers.ValidationError("Usuário não existe.")
+        
+        if not usuario.check_password(senha):
+            raise serializers.ValidationError("Senha incorreta!")
+        
+        return usuario
+
+        
