@@ -4,10 +4,10 @@ from datetime import date
 from .validators import NomeValidator, TelefoneValidator, DataNascimentoValidator, StatusValidator, SalaValidator, ClassificacaoValidator
 
 
-class Usuario(models.Model):
-    id_usuario = models.UUIDField(primary_key=True, default=uuid4)
-    username = models.CharField(max_length=255)
-    senha = models.CharField(max_length=255)
+class User(models.Model):
+    id_user = models.UUIDField(primary_key=True, default=uuid4)
+    username = models.CharField(max_length=255, unique=True)
+    password = models.CharField(max_length=255)
 
     def __str__(self):
         return self.username
@@ -20,7 +20,7 @@ class Controle(models.Model):
     ]
 
     id_checkin = models.UUIDField(primary_key=True, default=uuid4)
-    id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    id_usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     data_horario_checkin = models.DateTimeField(auto_now_add=True)
     data_horario_checkout = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=ESCOLHA_STATUS, default='checkin', validators=[StatusValidator])
@@ -31,7 +31,7 @@ class Controle(models.Model):
 
 class Responsavel(models.Model):
     id_responsavel = models.UUIDField(primary_key=True, default=uuid4)
-    nome = models.CharField(max_length=255, validators=[NomeValidator()])
+    nome = models.CharField(max_length=255, validators=[NomeValidator])
     relacionamento_crianca = models.CharField(max_length=255)
     telefone_responsavel = models.CharField(max_length=11, validators=[TelefoneValidator])
 
@@ -66,6 +66,8 @@ class Crianca(models.Model):
     
     @property
     def idade(self):
+        if not self.data_nascimento:
+            return None
         today = date.today()
         idade = today.year - self.data_nascimento.year - ((today.month, today.day) < (self.data_nascimento.month, self.data_nascimento.day))
         return idade

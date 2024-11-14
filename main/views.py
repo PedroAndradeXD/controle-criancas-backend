@@ -1,39 +1,40 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+
 
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
-from .serializers import LoginUsuarioSerializer
+from .serializers import LoginUserSerializer, CadastroUserSerializer
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def login(request):
-    serializer = LoginUsuarioSerializer(data=request)
+    serializer = LoginUserSerializer(data=request.data)
 
     if serializer.is_valid():
-        usuario = serializer.validate_data
-        return Response({"status": "Login realizado com sucesso!"})
+        user = serializer.validated_data
+        return Response({"status": "Login realizado com sucesso!"}, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-def cadastro_usuario(request):
-    username = request.data.get('nome')
-    senha = request.data.get('senha')
+@permission_classes([AllowAny])
+def cadastro_user(request):
+    username = request.data.get('username')
 
-    if not username or not senha:
-        return Response({"erro": "nome e senha são obrigatórios."}, status=status.HTTP_400_BAD_REQUEST)
+    if User.objects.filter(username=username).exists():
+        return Response({"error": "Nome de usuário já cadastrado."}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        usuario = User.objects.create(
-            username=username,
-            password=make_password(senha)
-        )
-
-        return Response({"status": "Usuário criado com sucesso."})
-
-    except Exception as e:
-        return Response({"erro": str(e)}, status=status.HTTP_400_BAD_REQUEST) 
+    serializer = CadastroUserSerializer(data=request.data)
+    
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"status": "Usuário criado com sucesso!"}, status=status.HTTP_201_CREATED)
+    return Response({serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    
 
 @api_view(['POST'])
 def cadastro_crianca(request):

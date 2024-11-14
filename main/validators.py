@@ -16,7 +16,7 @@ class TelefoneValidator:
 
 class DataNascimentoValidator:
     def __call__(self, value):
-        idade = date.today().year - value.year
+        idade = date.today().year - value.year - ((date.today().month, date.today().day) < (value.month, value.day))
         if idade < 1 or idade > 17:
             raise serializers.ValidationError("Idade deve estar entre 1  e 17 anos.")
 
@@ -24,13 +24,13 @@ class DataNascimentoValidator:
 class StatusValidator:
     def __call__(self, value):
         if value not in ['checkin', 'checkout']:
-            raise serializers.ValidationError("Status inválido! Escolha entre 'checkin' e 'checkout'.")
+            raise serializers.ValidationError("Escolha um status válido: 'checkin' ou 'checkout'.")
         
 
 class SalaValidator:
     def __call__(self, value):
         if value not in ['sala 1', 'sala 2', 'sala 3', 'teens', 'adolescentes']:
-            raise serializers.ValidationError("Sala inválida! Escolha entre 'sala 1', 'sala 2, 'sala 3', 'teens' e 'adolescentes'.")
+            raise serializers.ValidationError("Sala inválida! Escolha entre 'sala 1', 'sala 2', 'sala 3', 'teens' e 'adolescentes'.")
 
 
 class ClassificacaoValidator:
@@ -41,4 +41,4 @@ class ClassificacaoValidator:
 class UsernameValidator:
     def __call__(self, value):
         if len(value) < 3:
-            raise serializers.ValidatorError("Username deve ter ao menos 3 caracteres.")
+            raise serializers.ValidationError("Username deve ter ao menos 3 caracteres.")
