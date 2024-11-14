@@ -26,17 +26,6 @@ class StatusValidator:
         if value not in ['checkin', 'checkout']:
             raise serializers.ValidationError("Escolha um status válido: 'checkin' ou 'checkout'.")
         
-
-class SalaValidator:
-    def __call__(self, value):
-        if value not in ['sala 1', 'sala 2', 'sala 3', 'teens', 'adolescentes']:
-            raise serializers.ValidationError("Sala inválida! Escolha entre 'sala 1', 'sala 2', 'sala 3', 'teens' e 'adolescentes'.")
-
-
-class ClassificacaoValidator:
-    def __call__(self, value):
-        if value not in ['membro', 'visitante', 'congregado']:
-            raise serializers.ValidationError("Classificação inválida! Escolha entre 'membro', 'visitante' e 'congregado'.")
         
 class UsernameValidator:
     def __call__(self, value):

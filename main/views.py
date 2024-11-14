@@ -7,7 +7,7 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
-from .serializers import LoginUserSerializer, CadastroUserSerializer
+from .serializers import LoginUserSerializer, CadastroUserSerializer, CadastroCriancaSerializer
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -37,9 +37,15 @@ def cadastro_user(request):
     
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def cadastro_crianca(request):
-    # Lógica para cadastrar uma nova criança
-    return Response({"status": "Cadastro realizado com sucesso"})
+    serializer = CadastroCriancaSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"status": "Cadastro realizado com sucesso"}, status=status.HTTP_201_CREATED)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def tela_principal(request):

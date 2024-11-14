@@ -1,14 +1,14 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Crianca, Responsavel, Controle
-from .validators import UsernameValidator
+from .validators import UsernameValidator, NomeValidator, DataNascimentoValidator, TelefoneValidator
 
 class CriancaSerializer(serializers.ModelSerializer):
     idade = serializers.ReadOnlyField()
 
     class Meta:
         model = Crianca
-        fields = ['id_crianca', 'nome', 'data_nascimento', 'classificacao', 'sala', 'idade']
+        fields = ['id_crianca', 'nome', 'data_nascimento', 'classificacao', 'sala', 'idade', 'foto']
 
 
 class ResponsavelSerializer(serializers.ModelSerializer):
@@ -17,6 +17,14 @@ class ResponsavelSerializer(serializers.ModelSerializer):
         model = Responsavel
         fields = ['id_responsavel', 'nome', 'relacionamento_crianca', 'telefone_responsavel']
         read_only_fields = ['id_responsavel']
+
+
+class ResponsavelInfoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Responsavel
+        fields = ['nome', 'telefone_responsavel', 'relacionamento_crianca']
+        extra_kwags = {'telefone_responsavel': {'validators': [TelefoneValidator]}}
 
 
 class ControleSerializer(serializers.ModelSerializer):
@@ -62,5 +70,31 @@ class CadastroUserSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
+    
+
+class CadastroCriancaSerializer(serializers.ModelSerializer):
+    responsavel_1 = ResponsavelInfoSerializer()
+    responsavel_2 = ResponsavelInfoSerializer(required=False)
+    foto = serializers.ImageField(required=False)
+
+    class Meta:
+        model = Crianca
+        fields = ['nome', 'data_nascimento', 'classificacao', 'sala', 'idade', 'responsavel_1', 'responsavel_2', 'observacao', 'foto']
+
+    def create(self, validated_data):
+        responsavel_1_data = validated_data.pop('responsavel_1')
+        responsavel_2_data = validated_data.pop('responsavel_2', None)
+
+        crianca = Crianca.objects.create(**validated_data)
+
+        responsavel_1, _ = Responsavel.objects.get_or_create(**responsavel_1_data)
+        crianca.responsaveis.add(responsavel_1)
+
+        if responsavel_2_data:
+            responsavel_2, _ = Responsavel.objects.get_or_create(**responsavel_2_data)
+            crianca.responsaveis.add(responsavel_2)
+
+        return crianca
+    
 
         
