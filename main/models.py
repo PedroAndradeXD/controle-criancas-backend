@@ -1,7 +1,6 @@
 from django.db import models
 from uuid import uuid4
 from datetime import date
-from .validators import NomeValidator, TelefoneValidator, DataNascimentoValidator, StatusValidator, SalaValidator, ClassificacaoValidator
 
 
 class User(models.Model):
@@ -23,7 +22,7 @@ class Controle(models.Model):
     id_usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     data_horario_checkin = models.DateTimeField(auto_now_add=True)
     data_horario_checkout = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=10, choices=ESCOLHA_STATUS, default='checkin', validators=[StatusValidator])
+    status = models.CharField(max_length=10, choices=ESCOLHA_STATUS, default='checkin')
 
     def __str__(self):
         return self.status
@@ -31,9 +30,9 @@ class Controle(models.Model):
 
 class Responsavel(models.Model):
     id_responsavel = models.UUIDField(primary_key=True, default=uuid4)
-    nome = models.CharField(max_length=255, validators=[NomeValidator])
+    nome = models.CharField(max_length=255)
     relacionamento_crianca = models.CharField(max_length=255)
-    telefone_responsavel = models.CharField(max_length=11, validators=[TelefoneValidator])
+    telefone_responsavel = models.CharField(max_length=11)
 
     def __str__(self):
         return self.nome
@@ -55,11 +54,14 @@ class Crianca(models.Model):
     ]
 
     id_crianca = models.UUIDField(primary_key=True, default=uuid4)
-    id_checkin = models.ForeignKey(Controle, on_delete=models.CASCADE)
-    nome = models.CharField(max_length=255, validators=[NomeValidator])
-    data_nascimento = models.DateField(default=date(2000, 1, 1), validators=[DataNascimentoValidator])
-    classificacao = models.CharField(max_length=10, choices=ESCOLHA_CLASSIFICACAO, validators=[ClassificacaoValidator])
-    sala = models.CharField(max_length=12, choices=ESCOLHA_SALA, validators=[SalaValidator])
+    id_checkin = models.ForeignKey(Controle, on_delete=models.CASCADE, null=True, blank=True)
+    nome = models.CharField(max_length=255)
+    data_nascimento = models.DateField(default=date(2000, 1, 1))
+    classificacao = models.CharField(max_length=10, choices=ESCOLHA_CLASSIFICACAO)
+    responsaveis = models.ManyToManyField(Responsavel, related_name="criancas")
+    sala = models.CharField(max_length=12, choices=ESCOLHA_SALA)
+    observacao = models.CharField(max_length=500, null=True)
+    foto = models.ImageField(upload_to='fotos_criancas', null=True, blank=True)
 
     def __str__(self):
         return self.nome

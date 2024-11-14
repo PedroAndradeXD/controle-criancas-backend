@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='crianca',
             name='classificacao',
-            field=models.CharField(choices=[('membro', 'Membro'), ('visitante', 'Visitante'), ('congregado', 'Congregado')], max_length=10, validators=[main.validators.ClassificacaoValidator]),
+            field=models.CharField(choices=[('membro', 'Membro'), ('visitante', 'Visitante'), ('congregado', 'Congregado')], max_length=10),
         ),
         migrations.AlterField(
             model_name='crianca',
@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='crianca',
             name='sala',
-            field=models.CharField(choices=[('kids 1', 'Kids 1'), ('kids 2', 'Kids 2'), ('kids 3', 'Kids 3'), ('teens', 'Teens'), ('adolescentes', 'Adolescentes')], max_length=12, validators=[main.validators.SalaValidator]),
+            field=models.CharField(choices=[('kids 1', 'Kids 1'), ('kids 2', 'Kids 2'), ('kids 3', 'Kids 3'), ('teens', 'Teens'), ('adolescentes', 'Adolescentes')], max_length=12),
         ),
         migrations.AlterField(
             model_name='responsavel',
