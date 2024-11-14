@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Crianca, Responsavel, Controle, Usuario
+from django.contrib.auth.models import User
+from .models import Crianca, Responsavel, Controle
 from .validators import UsernameValidator
 
 class CriancaSerializer(serializers.ModelSerializer):
@@ -8,7 +9,6 @@ class CriancaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crianca
         fields = ['id_crianca', 'nome', 'data_nascimento', 'classificacao', 'sala', 'idade']
-        read_only_fields = ['id_crianca', 'idade'] 
 
 
 class ResponsavelSerializer(serializers.ModelSerializer):
@@ -26,26 +26,41 @@ class ControleSerializer(serializers.ModelSerializer):
         fields = ['id_checkin', 'status', 'data_horario_checkin', 'data_horario_checkout']
         read_only_fields = ['id_checkin', 'status', 'data_horario_checkin', 'data_horario_checkout']
 
-class LoginUsuarioSerializer(serializers.ModelSerializer):
+
+class LoginUserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(validators=[UsernameValidator()])
-    senha = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = Usuario
-        fields = ['username', 'senha']
+        model = User
+        fields = ['username', 'password']
 
     def validate(self, data):
         username = data['username']
-        senha = data['senha']
+        password = data['password']
 
         try:
-            usuario = Usuario.objects.get(username__iexact=username)
-        except Usuario.DoesNotExist:
+            user = User.objects.get(username__iexact=username)
+        except User.DoesNotExist:
             raise serializers.ValidationError("Usuário não existe.")
         
-        if not usuario.check_password(senha):
+        if not user.check_password(password):
             raise serializers.ValidationError("Senha incorreta!")
         
-        return usuario
+        return user
+    
+
+class CadastroUserSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ['username', 'password']
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            password=validated_data['password']
+        )
+        return user
 
         
