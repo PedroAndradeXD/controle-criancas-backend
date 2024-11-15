@@ -97,4 +97,25 @@ class CadastroCriancaSerializer(serializers.ModelSerializer):
         return crianca
     
 
+class ListaCriancaSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Crianca
+        fields = ['nome', 'idade', 'sala']
+
+
+class DetalheCriancaSerializer(serializers.ModelSerializer):
+    responsaveis = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Crianca
+        fields = ['nome', 'idade', 'sala', 'responsaveis', 'observacao']
+
+    def get_responsaveis(self, obj):
+        return [
+            {'nome': resp.nome, 'telefone': resp.telefone_responsavel}
+            for resp in obj.responsaveis.all()
+        ]
+    
+
         

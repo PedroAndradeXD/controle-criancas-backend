@@ -19,7 +19,7 @@ class Controle(models.Model):
     ]
 
     id_checkin = models.UUIDField(primary_key=True, default=uuid4)
-    id_usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    id_usuario = models.ForeignKey('Crianca', on_delete=models.CASCADE)
     data_horario_checkin = models.DateTimeField(auto_now_add=True)
     data_horario_checkout = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=ESCOLHA_STATUS, default='checkin')
