@@ -38,7 +38,7 @@ def cadastro_user(request):
     if serializer.is_valid():
         serializer.save()
         return Response({"status": "Usuário criado com sucesso!"}, status=status.HTTP_201_CREATED)
-    return Response({serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 @api_view(['POST'])
