@@ -59,12 +59,19 @@ class LoginUserSerializer(serializers.ModelSerializer):
     
 
 class CadastroUserSerializer(serializers.ModelSerializer):
+    confirmar_senha = serializers.CharField(write_only=True)
     
     class Meta:
         model = User
-        fields = ['username', 'password']
+        fields = ['username', 'password', 'confirmar_senha']
+
+    def validate(self, data):
+        if data['password'] != data['confirmar_senha']:
+            raise serializers.ValidationError({"password": "As senhas não coincidem."})
+        return data
 
     def create(self, validated_data):
+        validated_data.pop('confirmar_senha')
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password']
