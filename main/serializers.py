@@ -83,6 +83,7 @@ class CadastroCriancaSerializer(serializers.ModelSerializer):
     responsavel_1 = ResponsavelInfoSerializer()
     responsavel_2 = ResponsavelInfoSerializer(required=False)
     foto = serializers.ImageField(required=False)
+    observacao = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = Crianca
