@@ -106,10 +106,11 @@ class CadastroCriancaSerializer(serializers.ModelSerializer):
     
 
 class ListaCriancaSerializer(serializers.ModelSerializer):
+    responsaveis = ResponsavelInfoSerializer(many=True)
     
     class Meta:
         model = Crianca
-        fields = ['nome', 'idade', 'sala']
+        fields = ['id_crianca', 'nome', 'classificacao', 'sala', 'idade', 'foto', 'responsaveis', 'observacao']
 
 
 class DetalheCriancaSerializer(serializers.ModelSerializer):
