@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Usuario
-admin.site.register(Usuario)
+from .models import User
+admin.site.register(User)
 
 from django.contrib import admin
 from .models import (Crianca, Responsavel, Controle)

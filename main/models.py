@@ -3,13 +3,13 @@ from uuid import uuid4
 from datetime import date
 
 
-class Usuario(models.Model):
-    id_usuario = models.UUIDField(primary_key=True, default=uuid4)
-    username_usuario = models.CharField(max_length=255)
-    senha_usuario = models.CharField(max_length=255)
+class User(models.Model):
+    id_user = models.UUIDField(primary_key=True, default=uuid4)
+    username = models.CharField(max_length=255, unique=True)
+    password = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.username_usuario
+        return self.username
 
 
 class Controle(models.Model):
@@ -19,7 +19,7 @@ class Controle(models.Model):
     ]
 
     id_checkin = models.UUIDField(primary_key=True, default=uuid4)
-    id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    id_usuario = models.ForeignKey('Crianca', on_delete=models.CASCADE)
     data_horario_checkin = models.DateTimeField(auto_now_add=True)
     data_horario_checkout = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=ESCOLHA_STATUS, default='checkin')
@@ -54,17 +54,22 @@ class Crianca(models.Model):
     ]
 
     id_crianca = models.UUIDField(primary_key=True, default=uuid4)
-    id_checkin = models.ForeignKey(Controle, on_delete=models.CASCADE)
+    id_checkin = models.ForeignKey(Controle, on_delete=models.CASCADE, null=True, blank=True)
     nome = models.CharField(max_length=255)
     data_nascimento = models.DateField(default=date(2000, 1, 1))
     classificacao = models.CharField(max_length=10, choices=ESCOLHA_CLASSIFICACAO)
+    responsaveis = models.ManyToManyField(Responsavel, related_name="criancas")
     sala = models.CharField(max_length=12, choices=ESCOLHA_SALA)
+    observacao = models.CharField(max_length=500, null=True)
+    foto = models.ImageField(upload_to='fotos_criancas', null=True, blank=True)
 
     def __str__(self):
         return self.nome
     
     @property
     def idade(self):
+        if not self.data_nascimento:
+            return None
         today = date.today()
         idade = today.year - self.data_nascimento.year - ((today.month, today.day) < (self.data_nascimento.month, self.data_nascimento.day))
         return idade
